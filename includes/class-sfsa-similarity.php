@@ -34,7 +34,8 @@ class SFSA_Similarity {
 	public static function tokens( $text ) {
 		$text = preg_replace( '/<!--.*?-->/s', ' ', (string) $text );
 		$text = preg_replace( '/\[\/?[a-zA-Z0-9_-]+[^\]]*\]/', ' ', $text );
-		$text = html_entity_decode( strip_tags( $text ), ENT_QUOTES, 'UTF-8' );
+		// Pure-PHP class (testable without WordPress), so wp_strip_all_tags() is unavailable here.
+		$text = html_entity_decode( strip_tags( $text ), ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags
 		$text = function_exists( 'mb_strtolower' ) ? mb_strtolower( $text, 'UTF-8' ) : strtolower( $text );
 		preg_match_all( '/[\p{L}\p{N}]+(?:[\'’][\p{L}]+)?/u', $text, $m );
 		return $m[0];
@@ -127,7 +128,7 @@ class SFSA_Similarity {
 	 * Group near-duplicate documents.
 	 *
 	 * @param array<int,array{title:string,content:string}> $docs      id => doc.
-	 * @param float                                          $threshold Minimum combined score (0-1) for a pair to be linked.
+	 * @param float                                         $threshold Minimum combined score (0-1) for a pair to be linked.
 	 * @return array<int,array{ids:int[],max_score:float,pairs:array}> Groups, highest score first.
 	 */
 	public static function find_groups( array $docs, $threshold = 0.5 ) {
@@ -154,9 +155,9 @@ class SFSA_Similarity {
 		$pairs = array();
 		foreach ( $candidates as $key ) {
 			list( $a, $b ) = array_map( 'intval', explode( ':', $key ) );
-			$cs = self::jaccard( count( $content[ $a ] ), count( $content[ $b ] ), $content_shared[ $key ] ?? 0 );
-			$ts = self::jaccard( count( $titles[ $a ] ), count( $titles[ $b ] ), $title_shared[ $key ] ?? 0 );
-			$score = self::CONTENT_WEIGHT * $cs + self::TITLE_WEIGHT * $ts;
+			$cs            = self::jaccard( count( $content[ $a ] ), count( $content[ $b ] ), $content_shared[ $key ] ?? 0 );
+			$ts            = self::jaccard( count( $titles[ $a ] ), count( $titles[ $b ] ), $title_shared[ $key ] ?? 0 );
+			$score         = self::CONTENT_WEIGHT * $cs + self::TITLE_WEIGHT * $ts;
 			if ( $score < $threshold ) {
 				continue;
 			}
@@ -180,7 +181,7 @@ class SFSA_Similarity {
 			$groups[ $find( $id ) ]['ids'][] = $id;
 		}
 		foreach ( $pairs as $pair ) {
-			$root                      = $find( $pair['a'] );
+			$root                       = $find( $pair['a'] );
 			$groups[ $root ]['pairs'][] = $pair;
 		}
 		$out = array();

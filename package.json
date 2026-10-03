@@ -7,7 +7,7 @@
 		"env:stop": "wp-env stop",
 		"env:reset": "wp-env clean all && wp-env start",
 		"seed": "bash ./bin/seed-test-content.sh",
-		"test": "php tests/test-similarity.php",
+		"test": "php tests/test-similarity.php && php tests/test-analyzer.php && php tests/test-linker.php",
 		"lint": "composer run lint"
 	},
 	"devDependencies": {

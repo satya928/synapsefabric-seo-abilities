@@ -24,7 +24,10 @@ class SFSA_Ability_Get_Post {
 				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
-						'id' => array( 'type' => 'integer', 'minimum' => 1 ),
+						'id' => array(
+							'type'    => 'integer',
+							'minimum' => 1,
+						),
 					),
 					'required'   => array( 'id' ),
 				),
@@ -67,14 +70,14 @@ class SFSA_Ability_Get_Post {
 			'title'      => $post->post_title,
 			'slug'       => $post->post_name,
 			'status'     => $post->post_status,
-			'date'       => get_post_time( 'c', true, $post ),
-			'modified'   => get_post_modified_time( 'c', true, $post ),
+			'date'       => SFSA_Abilities::iso_date( $post ),
+			'modified'   => gmdate( 'c', SFSA_Abilities::modified_ts( $post ) ),
 			'url'        => get_permalink( $post ),
 			'excerpt'    => $post->post_excerpt,
 			'content'    => $post->post_content,
 			'word_count' => SFSA_Abilities::word_count( $post->post_content ),
-			'categories' => wp_list_pluck( (array) get_the_category( $post->ID ), 'name' ),
-			'tags'       => wp_list_pluck( (array) get_the_tags( $post->ID ), 'name' ),
+			'categories' => SFSA_Abilities::term_names( $post->ID, 'category' ),
+			'tags'       => SFSA_Abilities::term_names( $post->ID, 'post_tag' ),
 			'seo'        => SFSA_SEO_Meta::get( $post->ID ),
 		);
 	}

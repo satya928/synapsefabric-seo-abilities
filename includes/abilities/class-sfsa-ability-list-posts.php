@@ -24,13 +24,37 @@ class SFSA_Ability_List_Posts {
 				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
-						'page'     => array( 'type' => 'integer', 'minimum' => 1, 'default' => 1 ),
-						'per_page' => array( 'type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'default' => 20 ),
-						'status'   => array( 'type' => 'string', 'enum' => array( 'any', 'publish', 'draft', 'pending', 'private', 'future' ), 'default' => 'publish' ),
+						'page'     => array(
+							'type'    => 'integer',
+							'minimum' => 1,
+							'default' => 1,
+						),
+						'per_page' => array(
+							'type'    => 'integer',
+							'minimum' => 1,
+							'maximum' => 100,
+							'default' => 20,
+						),
+						'status'   => array(
+							'type'    => 'string',
+							'enum'    => array( 'any', 'publish', 'draft', 'pending', 'private', 'future' ),
+							'default' => 'publish',
+						),
 						'search'   => array( 'type' => 'string' ),
-						'category' => array( 'type' => 'integer', 'description' => 'Category term ID.' ),
-						'orderby'  => array( 'type' => 'string', 'enum' => array( 'date', 'title', 'modified' ), 'default' => 'date' ),
-						'order'    => array( 'type' => 'string', 'enum' => array( 'ASC', 'DESC' ), 'default' => 'DESC' ),
+						'category' => array(
+							'type'        => 'integer',
+							'description' => 'Category term ID.',
+						),
+						'orderby'  => array(
+							'type'    => 'string',
+							'enum'    => array( 'date', 'title', 'modified' ),
+							'default' => 'date',
+						),
+						'order'    => array(
+							'type'    => 'string',
+							'enum'    => array( 'ASC', 'DESC' ),
+							'default' => 'DESC',
+						),
 					),
 				),
 				'output_schema'       => array(
@@ -59,7 +83,7 @@ class SFSA_Ability_List_Posts {
 		$page     = max( 1, (int) ( $input['page'] ?? 1 ) );
 		$per_page = min( 100, max( 1, (int) ( $input['per_page'] ?? 20 ) ) );
 		$order    = ( isset( $input['order'] ) && 'ASC' === strtoupper( $input['order'] ) ) ? 'ASC' : 'DESC';
-		$orderby  = in_array( $input['orderby'] ?? 'date', array( 'date', 'title', 'modified' ), true ) ? $input['orderby'] : 'date';
+		$orderby  = isset( $input['orderby'] ) && in_array( $input['orderby'], array( 'date', 'title', 'modified' ), true ) ? $input['orderby'] : 'date';
 		$status   = sanitize_key( $input['status'] ?? 'publish' );
 		$allowed  = array( 'any', 'publish', 'draft', 'pending', 'private', 'future' );
 
@@ -86,10 +110,10 @@ class SFSA_Ability_List_Posts {
 				'id'         => (int) $post->ID,
 				'title'      => get_the_title( $post ),
 				'slug'       => $post->post_name,
-				'date'       => get_post_time( 'c', true, $post ),
+				'date'       => SFSA_Abilities::iso_date( $post ),
 				'word_count' => SFSA_Abilities::word_count( $post->post_content ),
-				'categories' => wp_list_pluck( (array) get_the_category( $post->ID ), 'name' ),
-				'tags'       => wp_list_pluck( (array) get_the_tags( $post->ID ), 'name' ),
+				'categories' => SFSA_Abilities::term_names( $post->ID, 'category' ),
+				'tags'       => SFSA_Abilities::term_names( $post->ID, 'post_tag' ),
 				'status'     => $post->post_status,
 				'url'        => get_permalink( $post ),
 			);

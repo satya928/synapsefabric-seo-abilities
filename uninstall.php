@@ -12,7 +12,9 @@ global $wpdb;
 delete_option( 'sfsa_settings' );
 delete_site_option( 'sfsa_settings' );
 
-// Redirect table (created by the merge-posts ability, if it was ever used).
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}sfsa_redirects" );
+// Custom tables: redirects (merge-posts) and the activity log.
+foreach ( array( 'sfsa_redirects', 'sfsa_log' ) as $sfsa_table ) {
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$sfsa_table}" );
+}
 delete_option( 'sfsa_db_version' );

@@ -1,14 +1,6 @@
 <?php
 // Standalone test: php tests/test-similarity.php
-define( 'SFSA_TESTING', true );
-require __DIR__ . '/../includes/class-sfsa-similarity.php';
-
-$fail = 0;
-function check( $label, $cond ) {
-	global $fail;
-	echo ( $cond ? 'ok   ' : 'FAIL ' ) . $label . "\n";
-	$fail += $cond ? 0 : 1;
-}
+require __DIR__ . '/bootstrap.php';
 
 $base = 'WordPress caching speeds up your site by storing rendered pages so the server does not rebuild them on every request. Page caching, object caching and browser caching each help in a different way, and most hosts support at least one of them out of the box.';
 $docs = array(
@@ -26,4 +18,4 @@ check( 'unrelated posts not grouped', 0 === count( SFSA_Similarity::find_groups(
 check( 'empty input ok', array() === SFSA_Similarity::find_groups( array() ) );
 check( 'tokens strip markup', array( 'hello', 'world' ) === SFSA_Similarity::tokens( '<!-- wp:x --><b>Hello</b> [gallery ids="1"] world' ) );
 
-exit( $fail ? 1 : 0 );
+finish();

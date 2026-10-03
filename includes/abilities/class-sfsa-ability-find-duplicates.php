@@ -26,9 +26,25 @@ class SFSA_Ability_Find_Duplicates {
 				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
-						'threshold' => array( 'type' => 'number', 'minimum' => 0.1, 'maximum' => 1, 'default' => 0.5, 'description' => 'Minimum combined score for two posts to be linked. Lower finds more, looser matches.' ),
-						'status'    => array( 'type' => 'string', 'enum' => array( 'any', 'publish', 'draft', 'pending', 'private', 'future' ), 'default' => 'publish' ),
-						'limit'     => array( 'type' => 'integer', 'minimum' => 2, 'maximum' => self::MAX_POSTS, 'default' => 1000, 'description' => 'Max posts to scan (most recent first).' ),
+						'threshold' => array(
+							'type'        => 'number',
+							'minimum'     => 0.1,
+							'maximum'     => 1,
+							'default'     => 0.5,
+							'description' => 'Minimum combined score for two posts to be linked. Lower finds more, looser matches.',
+						),
+						'status'    => array(
+							'type'    => 'string',
+							'enum'    => array( 'any', 'publish', 'draft', 'pending', 'private', 'future' ),
+							'default' => 'publish',
+						),
+						'limit'     => array(
+							'type'        => 'integer',
+							'minimum'     => 2,
+							'maximum'     => self::MAX_POSTS,
+							'default'     => 1000,
+							'description' => 'Max posts to scan (most recent first).',
+						),
 					),
 				),
 				'output_schema'       => array( 'type' => 'object' ),
@@ -64,8 +80,8 @@ class SFSA_Ability_Find_Duplicates {
 			)
 		);
 
-		$docs   = array();
-		$posts  = array();
+		$docs  = array();
+		$posts = array();
 		foreach ( $query->posts as $post ) {
 			$docs[ $post->ID ]  = array(
 				'title'   => $post->post_title,
@@ -83,7 +99,7 @@ class SFSA_Ability_Find_Duplicates {
 					'title'      => get_the_title( $posts[ $id ] ),
 					'slug'       => $posts[ $id ]->post_name,
 					'status'     => $posts[ $id ]->post_status,
-					'date'       => get_post_time( 'c', true, $posts[ $id ] ),
+					'date'       => SFSA_Abilities::iso_date( $posts[ $id ] ),
 					'word_count' => SFSA_Abilities::word_count( $posts[ $id ]->post_content ),
 					'url'        => get_permalink( $posts[ $id ] ),
 				);

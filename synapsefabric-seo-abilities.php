@@ -19,10 +19,19 @@ defined( 'ABSPATH' ) || exit;
 define( 'SFSA_VERSION', '0.1.0' );
 define( 'SFSA_DIR', plugin_dir_path( __FILE__ ) );
 
+require_once SFSA_DIR . 'includes/class-sfsa-db.php';
+require_once SFSA_DIR . 'includes/class-sfsa-log.php';
 require_once SFSA_DIR . 'includes/class-sfsa-settings.php';
 require_once SFSA_DIR . 'includes/class-sfsa-similarity.php';
+require_once SFSA_DIR . 'includes/class-sfsa-analyzer.php';
+require_once SFSA_DIR . 'includes/class-sfsa-linker.php';
+require_once SFSA_DIR . 'includes/class-sfsa-redirects.php';
 require_once SFSA_DIR . 'includes/class-sfsa-seo-meta.php';
 require_once SFSA_DIR . 'includes/class-sfsa-abilities.php';
 
+register_activation_hook( __FILE__, array( 'SFSA_DB', 'install' ) );
+add_action( 'plugins_loaded', array( 'SFSA_DB', 'maybe_install' ) );
+
 SFSA_Settings::init();
+SFSA_Redirects::init();
 SFSA_Abilities::init();
